@@ -51,8 +51,8 @@ export class Field {
     }
   }
 
-  startEmulation() {
-    if (!this.timer) this.timer = setInterval(this.nextState.bind(this), 1000);
+  startEmulation(sleep = 500) {
+    if (!this.timer) this.timer = setInterval(this.nextState.bind(this), sleep);
   }
 
   stopEmulation() {
@@ -80,7 +80,7 @@ export class Field {
     const emulationEvent = new CustomEvent("emulationStep", {
       bubbles: true,
       detail: {
-        time: `<br>${this.currentStep}: ${end - start}ms;`,
+        time: `${this.currentStep}:${end - start}ms; `,
       },
     });
     this.board.dispatchEvent(emulationEvent);

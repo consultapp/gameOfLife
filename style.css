@@ -29,9 +29,5 @@ body {
   gap: 20px;
 }
 .timeContainer {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  align-self: flex-start;
-  max-width: 100px;
+  max-width: 500px;
 }

@@ -37,10 +37,16 @@ export class GameOfLife {
 
   initStartBtn() {
     this.startBtn = document.querySelector(".startBtn");
+    this.sleepField = document.querySelector(".sleep");
+    console.log("this.sleepField?.value", this.sleepField?.value);
     if (this.startBtn) {
-      this.startBtn.addEventListener("click", this.start, {
-        signal: this.controller.signal,
-      });
+      this.startBtn.addEventListener(
+        "click",
+        () => this.start(parseInt(this.sleepField?.value) ?? 500),
+        {
+          signal: this.controller.signal,
+        }
+      );
     } else throw Error("no start button found");
   }
 
@@ -81,12 +87,12 @@ export class GameOfLife {
     } else throw Error("no randomize button found");
   }
 
-  start = () => {
+  start = (sleep = 500) => {
     this.randomizeFieldBtn.disabled = true;
     this.startBtn.disabled = true;
     this.stopBtn.disabled = false;
 
-    this.gameField.startEmulation();
+    this.gameField.startEmulation(sleep);
   };
 
   stop = () => {
