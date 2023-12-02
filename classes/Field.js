@@ -1,8 +1,10 @@
 import { Cell, CellTypes } from "./Cell.js";
 
 export class Field {
-  constructor(dimension = 100, canvas = ".board") {
+  constructor(width, dimension = 100, canvas = ".board") {
     this.board = document.querySelector(canvas);
+    this.board.width = this.board.clientWidth;
+    this.board.height = this.board.clientWidth;
     this.dimension = dimension;
     this.controller = new AbortController();
     this.currentStep = 0;

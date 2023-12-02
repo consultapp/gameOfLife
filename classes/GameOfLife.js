@@ -1,16 +1,17 @@
 import { Field } from "./Field.js";
 
 export class GameOfLife {
-  constructor(dimension = 10, canvas = ".board") {
+  constructor(width = 500, dimension = 10, canvas = ".board") {
     this.dimension = dimension;
     this.canvas = canvas;
+    this.width = width;
   }
 
   init() {
     this.controller = new AbortController();
     window.addEventListener("load", () => {
       this.initDimension();
-      this.gameField = new Field(this.dimension, this.canvas);
+      this.gameField = new Field(this.width, this.dimension, this.canvas);
       this.initStartBtn();
       this.initStopBtn();
       this.initResetBtn();
@@ -118,7 +119,7 @@ export class GameOfLife {
     } else throw Error("no randomize button found");
   }
 
-  start = (sleep = 500) => {
+  start = (sleep = 250) => {
     this.randomizeFieldBtn.disabled = true;
     this.startBtn.disabled = true;
     this.nextBtn.disabled = true;
@@ -148,7 +149,7 @@ export class GameOfLife {
     if (this.gameField) {
       this.gameField.destroy();
     }
-    this.gameField = new Field(this.dimension, this.canvas);
+    this.gameField = new Field(this.width, this.dimension, this.canvas);
   }
 
   destroy() {
