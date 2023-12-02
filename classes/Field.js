@@ -1,4 +1,4 @@
-import { Cell } from "./Cell.js";
+import { Cell, CellTypes } from "./Cell.js";
 
 export class Field {
   constructor(dimension = 100, canvas = ".board") {
@@ -6,6 +6,7 @@ export class Field {
     this.dimension = dimension;
     this.controller = new AbortController();
     this.currentStep = 0;
+    this.history = ["0".repeat(this.dimension ** 2)];
 
     if (this.board) {
       if ("getContext" in this.board) {
@@ -37,17 +38,23 @@ export class Field {
         this.field[i][j] = new Cell(i, j, this, this.cellSize);
       }
     }
+    this.history = ["0".repeat(this.dimension ** 2)];
   }
 
   randomLife(chance = 50) {
     if (this.field) {
+      let string = "";
       for (let i = 0; i < this.field.length; i++) {
         for (let j = 0; j < this.field.length; j++) {
           Math.random() > chance / 100
             ? this.field[i][j].die()
             : this.field[i][j].revive();
+          string +=
+            this.field[i][j].getState(true) === CellTypes.alive ? "1" : "0";
         }
       }
+      this.history = [string];
+      console.log("string", string);
     }
   }
 
@@ -68,13 +75,31 @@ export class Field {
 
   nextState = () => {
     const start = new Date().getTime();
-
+    let hist = "";
+    let aliveCount = 0;
     for (let i = 0; i < this.dimension; i++) {
       for (let j = 0; j < this.dimension; j++) {
         this.field[i][j].checkLife();
+
+        hist += this.field[i][j].getState(true) === CellTypes.alive ? "1" : "0";
+        aliveCount +=
+          this.field[i][j].getState(true) === CellTypes.alive ? 1 : 0;
       }
     }
     const end = new Date().getTime();
+
+    if (aliveCount === 0) {
+      this.stopEmulation();
+      alert("End of the game: all cells are dead.");
+      sendEOG("End of the game: all cells are dead.");
+    }
+    if (this.history.includes(hist)) {
+      this.stopEmulation();
+      alert("End of the game: loop.");
+      sendEOG("End of the game: loop.");
+    }
+
+    this.history.push(hist);
     this.currentStep++;
 
     const emulationEvent = new CustomEvent("emulationStep", {
@@ -86,8 +111,30 @@ export class Field {
     this.board.dispatchEvent(emulationEvent);
   };
 
+  sendEOG(msg) {
+    const emulationEvent = new CustomEvent("eog", {
+      bubbles: true,
+      detail: {
+        msg,
+      },
+    });
+    this.board.dispatchEvent(emulationEvent);
+  }
+
+  replaceHistoryAt(index, replacement) {
+    this.history[0] =
+      this.history[0].slice(0, index) +
+      replacement +
+      this.history[0].slice(index + replacement.length);
+  }
+
   toggleCell(x, y) {
     this.field[x][y].toggle();
+    this.replaceHistoryAt(
+      x * this.dimension + y,
+      this.field[x][y].getState() === CellTypes.alive ? "1" : "0"
+    );
+    console.log("this.history[0]", this.history);
   }
 
   clearField() {
@@ -103,6 +150,7 @@ export class Field {
   destroy() {
     this.stopEmulation();
     this.curretStep = 0;
+    this.history = null;
     this.controller.abort();
     this.clearField();
     this.board = null;
