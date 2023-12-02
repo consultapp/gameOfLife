@@ -16,6 +16,7 @@ export class GameOfLife {
       this.initResetBtn();
       this.initRandomizeBtn();
       this.initTimeMeasurement();
+      this.initEogListener();
     });
   }
 
@@ -25,8 +26,22 @@ export class GameOfLife {
       window.addEventListener(
         "emulationStep",
         (event) => {
-          console.log("event", event);
           this.timeContainer.innerHTML += event.detail.time;
+        },
+        {
+          signal: this.controller.signal,
+        }
+      );
+    } else throw Error("no timeContainer found");
+  }
+
+  initEogListener() {
+    if (this.timeContainer) {
+      window.addEventListener(
+        "eog",
+        (event) => {
+          this.stop();
+          alert(event.detail.msg);
         },
         {
           signal: this.controller.signal,
@@ -38,7 +53,6 @@ export class GameOfLife {
   initStartBtn() {
     this.startBtn = document.querySelector(".startBtn");
     this.sleepField = document.querySelector(".sleep");
-    console.log("this.sleepField?.value", this.sleepField?.value);
     if (this.startBtn) {
       this.startBtn.addEventListener(
         "click",

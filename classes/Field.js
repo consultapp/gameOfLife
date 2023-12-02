@@ -54,7 +54,6 @@ export class Field {
         }
       }
       this.history = [string];
-      console.log("string", string);
     }
   }
 
@@ -89,17 +88,19 @@ export class Field {
     const end = new Date().getTime();
 
     if (aliveCount === 0) {
-      this.stopEmulation();
-      alert("End of the game: all cells are dead.");
-      sendEOG("End of the game: all cells are dead.");
-    }
-    if (this.history.includes(hist)) {
-      this.stopEmulation();
-      alert("End of the game: loop.");
-      sendEOG("End of the game: loop.");
+      this.sendEOG("End of the game: all cells are dead.");
+      return;
+    } else if (this.history.includes(hist)) {
+      this.sendEOG("End of the game: loop.");
+      return;
     }
 
     this.history.push(hist);
+
+    // trick))
+    if (this.history.length > 50) {
+      this.history.shift();
+    }
     this.currentStep++;
 
     const emulationEvent = new CustomEvent("emulationStep", {
@@ -119,6 +120,7 @@ export class Field {
       },
     });
     this.board.dispatchEvent(emulationEvent);
+    this.stopEmulation();
   }
 
   replaceHistoryAt(index, replacement) {
@@ -134,7 +136,6 @@ export class Field {
       x * this.dimension + y,
       this.field[x][y].getState() === CellTypes.alive ? "1" : "0"
     );
-    console.log("this.history[0]", this.history);
   }
 
   clearField() {
