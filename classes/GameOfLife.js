@@ -120,6 +120,7 @@ export class GameOfLife {
   start = (sleep = 500) => {
     this.randomizeFieldBtn.disabled = true;
     this.startBtn.disabled = true;
+    this.nextBtn.disabled = true;
     this.stopBtn.disabled = false;
 
     this.gameField.startEmulation(sleep);
@@ -127,6 +128,7 @@ export class GameOfLife {
 
   stop = () => {
     this.startBtn.disabled = false;
+    this.nextBtn.disabled = false;
     this.stopBtn.disabled = true;
     this.gameField.stopEmulation();
   };
