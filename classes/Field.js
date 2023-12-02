@@ -4,23 +4,28 @@ export class Field {
   constructor(dimention = 100, canvas = ".board") {
     this.board = document.querySelector(canvas);
     this.dimention = dimention;
+    this.controller = new AbortController();
 
     if (this.board) {
       if ("getContext" in this.board) {
         this.boardCtx = this.board.getContext("2d");
-        console.log("boardCtx", this.boardCtx);
+        this.boardCtx.fill;
       }
       this.cellSize = this.board.clientWidth / this.dimention;
       this.newField(dimention);
-      this.board.addEventListener("pointerdown", (event) => {
-        if (event) {
-          const y0 = Math.trunc(event.offsetX / this.cellSize);
-          const x0 = Math.trunc(event.offsetY / this.cellSize);
-          this.toggleCell(x0, y0);
-        }
+      this.board.addEventListener("pointerdown", this.boardClickListener, {
+        signal: this.controller.signal,
       });
     }
   }
+
+  boardClickListener = (event) => {
+    if (event) {
+      const y0 = Math.trunc(event.offsetX / this.cellSize);
+      const x0 = Math.trunc(event.offsetY / this.cellSize);
+      this.toggleCell(x0, y0);
+    }
+  };
 
   newField(dimention = this.dimention) {
     this.field = new Array(dimention);
@@ -30,8 +35,6 @@ export class Field {
         this.field[i][j] = new Cell(i, j, this, this.cellSize);
       }
     }
-    console.dir(this.dimention);
-    console.dir(this.field);
   }
 
   randomLife(chance = 50) {
@@ -50,8 +53,19 @@ export class Field {
     this.field[x][y].toggle();
   }
 
+  clearField() {
+    this.boardCtx.fillStyle = "white";
+    this.boardCtx.fillRect(
+      0,
+      0,
+      this.cellSize * this.dimention,
+      this.cellSize * this.dimention
+    );
+  }
+
   destroy() {
-    console.log("field destroy()");
+    this.controller.abort();
+    this.clearField();
     this.board = null;
     this.boardCtx = null;
     this.field = null;

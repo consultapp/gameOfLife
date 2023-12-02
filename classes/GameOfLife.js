@@ -7,18 +7,23 @@ export class GameOfLife {
   }
 
   init() {
+    this.controller = new AbortController();
     window.addEventListener("load", () => {
       this.gameField = new Field(this.dimention, this.canvas);
 
-      const resetBtn = document.querySelector(".resetGame");
-      if (resetBtn) {
-        resetBtn.addEventListener("click", () => this.reset());
+      this.resetBtn = document.querySelector(".resetGame");
+      if (this.resetBtn) {
+        this.resetBtn.addEventListener("click", () => this.reset(), {
+          signal: this.controller.signal,
+        });
       } else throw Error("no reset button found");
 
-      const randomizeFieldBtn = document.querySelector(".randomizeField");
-      if (randomizeFieldBtn) {
-        randomizeFieldBtn.addEventListener("click", () =>
-          this.gameField.randomLife(10)
+      this.randomizeFieldBtn = document.querySelector(".randomizeField");
+      if (this.randomizeFieldBtn) {
+        this.randomizeFieldBtn.addEventListener(
+          "click",
+          () => this.gameField.randomLife(10),
+          { signal: this.controller.signal }
         );
       } else throw Error("no randomize button found");
     });
@@ -32,5 +37,11 @@ export class GameOfLife {
       this.gameField.destroy();
     }
     this.gameField = new Field(this.dimention, this.canvas);
+  }
+
+  destroy() {
+    this.controller.abort();
+    this.gameField.destroy();
+    this.gameField = null;
   }
 }
