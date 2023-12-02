@@ -33,6 +33,7 @@ export class Cell extends Point {
           this.field.getCell(this.neighbours[i]).getState() === CellTypes.alive
         )
           count++;
+        if (count > 3) break;
       }
       if (count === 3) {
         this.revive(true);
