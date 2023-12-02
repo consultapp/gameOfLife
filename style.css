@@ -8,11 +8,11 @@ body {
   flex-direction: column;
   height: 100%;
   width: 100vw;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   gap: 20px;
 }
-.container > div {
+.container > * {
   width: 500px;
 }
 
@@ -30,4 +30,10 @@ body {
 }
 .timeContainer {
   max-width: 500px;
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
