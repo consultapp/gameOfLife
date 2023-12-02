@@ -17,6 +17,7 @@ export class GameOfLife {
       this.initRandomizeBtn();
       this.initTimeMeasurement();
       this.initEogListener();
+      this.initNextBtn();
     });
   }
 
@@ -72,6 +73,21 @@ export class GameOfLife {
         signal: this.controller.signal,
       });
     } else throw Error("no stop button found");
+  }
+
+  initNextBtn() {
+    this.nextBtn = document.querySelector(".nextBtn");
+    if (this.nextBtn) {
+      this.nextBtn.addEventListener(
+        "click",
+        () => {
+          this.gameField.nextState();
+        },
+        {
+          signal: this.controller.signal,
+        }
+      );
+    } else throw Error("no next button found");
   }
 
   initDimension() {
