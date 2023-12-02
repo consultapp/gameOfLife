@@ -98,7 +98,7 @@ export class Field {
     this.history.push(hist);
 
     // trick))
-    if (this.history.length > 50) {
+    if (this.history.length > 500) {
       this.history.shift();
     }
     this.currentStep++;

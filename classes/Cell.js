@@ -92,10 +92,10 @@ export class Cell extends Point {
       : (this.field.boardCtx.fillStyle = "white");
 
     this.field.boardCtx.fillRect(
-      this.y * this.cellSize,
-      this.x * this.cellSize,
-      this.cellSize,
-      this.cellSize
+      Math.trunc(this.y * this.cellSize),
+      Math.trunc(this.x * this.cellSize),
+      Math.ceil(this.cellSize),
+      Math.ceil(this.cellSize)
     );
   }
 }
