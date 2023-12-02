@@ -42,7 +42,6 @@ export class GameOfLife {
         "eog",
         (event) => {
           this.stop();
-          console.log("this", this);
           alert(event.detail.msg);
           this.reset();
         },
