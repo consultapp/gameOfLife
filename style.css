@@ -1,26 +1,18 @@
-:root {
-  --cell-dimention: 25px;
+html,
+body {
+  height: 100%;
 }
 
-.root {
-  display: grid;
-  grid-template-columns: repeat(10, var(--cell-dimention));
-  gap: 0;
-  place-content: center;
-  place-items: center;
+.container {
+  display: flex;
+  height: 100%;
+  width: 100vw;
+  justify-content: center;
+  align-items: center;
 }
 
-.root > div {
+.board {
+  width: 500px;
+  height: 500px;
   border: 1px solid black;
-  width: var(--cell-dimention);
-  height: var(--cell-dimention);
-  padding: 0;
-  margin: 0;
-}
-
-.dead {
-  background-color: white;
-}
-.alive {
-  background-color: red;
 }
