@@ -21,11 +21,12 @@ export class Field {
   }
 
   boardClickListener = (event) => {
-    if (event) {
-      const y0 = Math.trunc(event.offsetX / this.cellSize);
-      const x0 = Math.trunc(event.offsetY / this.cellSize);
-      this.toggleCell(x0, y0);
-    }
+    if (this.currentStep === 0)
+      if (event) {
+        const y0 = Math.trunc(event.offsetX / this.cellSize);
+        const x0 = Math.trunc(event.offsetY / this.cellSize);
+        this.toggleCell(x0, y0);
+      }
   };
 
   newField(dimension = this.dimension) {
@@ -66,14 +67,23 @@ export class Field {
   }
 
   nextState = () => {
-    console.log("step start:", this.currentStep);
+    const start = new Date().getTime();
+
     for (let i = 0; i < this.dimension; i++) {
       for (let j = 0; j < this.dimension; j++) {
         this.field[i][j].checkLife();
       }
     }
+    const end = new Date().getTime();
     this.currentStep++;
-    console.log("this.field", this.field);
+
+    const emulationEvent = new CustomEvent("emulationStep", {
+      bubbles: true,
+      detail: {
+        time: `<br>${this.currentStep}: ${end - start}ms;`,
+      },
+    });
+    this.board.dispatchEvent(emulationEvent);
   };
 
   toggleCell(x, y) {
@@ -91,6 +101,7 @@ export class Field {
   }
 
   destroy() {
+    this.stopEmulation();
     this.curretStep = 0;
     this.controller.abort();
     this.clearField();

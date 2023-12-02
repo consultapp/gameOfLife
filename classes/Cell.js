@@ -85,7 +85,7 @@ export class Cell extends Point {
     this.getState() === CellTypes.alive ? this.die(queue) : this.revive(queue);
   }
 
-  updateUI(last = false) {
+  updateUI(last = true) {
     this.getState(last) === CellTypes.alive
       ? (this.field.boardCtx.fillStyle = "red")
       : (this.field.boardCtx.fillStyle = "white");

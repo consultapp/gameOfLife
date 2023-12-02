@@ -15,7 +15,24 @@ export class GameOfLife {
       this.initStopBtn();
       this.initResetBtn();
       this.initRandomizeBtn();
+      this.initTimeMeasurement();
     });
+  }
+
+  initTimeMeasurement() {
+    this.timeContainer = document.querySelector(".timeContainer");
+    if (this.timeContainer) {
+      window.addEventListener(
+        "emulationStep",
+        (event) => {
+          console.log("event", event);
+          this.timeContainer.innerHTML += event.detail.time;
+        },
+        {
+          signal: this.controller.signal,
+        }
+      );
+    } else throw Error("no timeContainer found");
   }
 
   initStartBtn() {
@@ -73,7 +90,6 @@ export class GameOfLife {
   };
 
   stop = () => {
-    this.randomizeFieldBtn.disabled = false;
     this.startBtn.disabled = false;
     this.stopBtn.disabled = true;
     this.gameField.stopEmulation();
@@ -83,6 +99,7 @@ export class GameOfLife {
     this.randomizeFieldBtn.disabled = false;
     this.startBtn.disabled = false;
     this.stopBtn.disabled = true;
+    this.timeContainer.innerHTML = "";
 
     const d = parseInt(this.dimensionField?.value) || 10;
     this.dimension = dimension;
