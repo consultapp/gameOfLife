@@ -17,4 +17,11 @@ body {
   width: 500px;
   height: 500px;
   border: 1px solid black;
+  cursor: pointer;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
 }

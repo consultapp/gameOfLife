@@ -19,36 +19,74 @@ const roundCoords = [
 export class Cell extends Point {
   constructor(x, y, field, cellSize = 10, type = CellTypes.dead) {
     super(x, y);
-    this.type = type;
+    this.type = [type];
     this.field = field;
     this.cellSize = cellSize;
     this.getNeighbours();
   }
 
-  check() {}
+  checkLife() {
+    let count = 0;
+    if (this.getState() === CellTypes.dead) {
+      for (let i = 0; i < this.neighbours.length; i++) {
+        if (
+          this.field.getCell(this.neighbours[i]).getState() === CellTypes.alive
+        )
+          count++;
+        if (count === 3) {
+          this.revive(true);
+          return;
+        }
+      }
+    } else {
+      for (let i = 0; i < this.neighbours.length; i++) {
+        if (
+          this.field.getCell(this.neighbours[i]).getState() === CellTypes.alive
+        ) {
+          count++;
+        }
+      }
+      if (count < 2 || count > 3) {
+        this.die(true);
+        return;
+      }
+    }
+
+    this.saveType();
+  }
+
+  getState(last = false) {
+    return last ? this.type.at(-1) : this.type[this.field.currentStep];
+  }
 
   getNeighbours() {
     this.neighbours = roundCoords.map(
-      ({ x, y }) => new FieldPoint(this.x + x, this.y + y, this.field.dimention)
+      ({ x, y }) => new FieldPoint(this.x + x, this.y + y, this.field.dimension)
     );
   }
 
-  die() {
-    this.type = CellTypes.dead;
-    this.updateUI();
+  die(queue = false) {
+    if (!queue) this.type[0] = CellTypes.dead;
+    else this.type.push(CellTypes.dead);
+    this.updateUI(true);
   }
 
-  revive() {
-    this.type = CellTypes.alive;
-    this.updateUI();
+  revive(queue = false) {
+    if (!queue) this.type[0] = CellTypes.alive;
+    else this.type.push(CellTypes.alive);
+    this.updateUI(true);
   }
 
-  toggle() {
-    this.type === CellTypes.alive ? this.die() : this.revive();
+  saveType() {
+    this.type.push(this.type.at(-1));
   }
 
-  updateUI() {
-    this.type === CellTypes.alive
+  toggle(queue = false) {
+    this.getState() === CellTypes.alive ? this.die(queue) : this.revive(queue);
+  }
+
+  updateUI(last = false) {
+    this.getState(last) === CellTypes.alive
       ? (this.field.boardCtx.fillStyle = "red")
       : (this.field.boardCtx.fillStyle = "white");
 

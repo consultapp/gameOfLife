@@ -1,42 +1,98 @@
 import { Field } from "./Field.js";
 
 export class GameOfLife {
-  constructor(dimention = 10, canvas = ".board") {
-    this.dimention = dimention;
+  constructor(dimension = 10, canvas = ".board") {
+    this.dimension = dimension;
     this.canvas = canvas;
   }
 
   init() {
     this.controller = new AbortController();
     window.addEventListener("load", () => {
-      this.gameField = new Field(this.dimention, this.canvas);
-
-      this.resetBtn = document.querySelector(".resetGame");
-      if (this.resetBtn) {
-        this.resetBtn.addEventListener("click", () => this.reset(), {
-          signal: this.controller.signal,
-        });
-      } else throw Error("no reset button found");
-
-      this.randomizeFieldBtn = document.querySelector(".randomizeField");
-      if (this.randomizeFieldBtn) {
-        this.randomizeFieldBtn.addEventListener(
-          "click",
-          () => this.gameField.randomLife(10),
-          { signal: this.controller.signal }
-        );
-      } else throw Error("no randomize button found");
+      this.initDimension();
+      this.gameField = new Field(this.dimension, this.canvas);
+      this.initStartBtn();
+      this.initStopBtn();
+      this.initResetBtn();
+      this.initRandomizeBtn();
     });
   }
 
-  reset(dimention = this.dimention, canvas = this.canvas) {
-    this.dimention = dimention;
+  initStartBtn() {
+    this.startBtn = document.querySelector(".startBtn");
+    if (this.startBtn) {
+      this.startBtn.addEventListener("click", this.start, {
+        signal: this.controller.signal,
+      });
+    } else throw Error("no start button found");
+  }
+
+  initStopBtn() {
+    this.stopBtn = document.querySelector(".stopBtn");
+    if (this.stopBtn) {
+      this.stopBtn.disabled = true;
+      this.stopBtn.addEventListener("click", this.stop, {
+        signal: this.controller.signal,
+      });
+    } else throw Error("no stop button found");
+  }
+
+  initDimension() {
+    this.dimensionField = document.getElementById("dimension");
+    if (this.dimensionField) {
+      this.dimension = parseInt(this.dimensionField?.value) || 10;
+    }
+  }
+
+  initResetBtn() {
+    this.resetBtn = document.querySelector(".resetGame");
+    if (this.resetBtn) {
+      this.resetBtn.addEventListener("click", () => this.reset(), {
+        signal: this.controller.signal,
+      });
+    } else throw Error("no reset button found");
+  }
+
+  initRandomizeBtn() {
+    this.randomizeFieldBtn = document.querySelector(".randomizeField");
+    if (this.randomizeFieldBtn) {
+      this.randomizeFieldBtn.addEventListener(
+        "click",
+        () => this.gameField.randomLife(10),
+        { signal: this.controller.signal }
+      );
+    } else throw Error("no randomize button found");
+  }
+
+  start = () => {
+    this.randomizeFieldBtn.disabled = true;
+    this.startBtn.disabled = true;
+    this.stopBtn.disabled = false;
+
+    this.gameField.startEmulation();
+  };
+
+  stop = () => {
+    this.randomizeFieldBtn.disabled = false;
+    this.startBtn.disabled = false;
+    this.stopBtn.disabled = true;
+    this.gameField.stopEmulation();
+  };
+
+  reset(dimension = this.dimension, canvas = this.canvas) {
+    this.randomizeFieldBtn.disabled = false;
+    this.startBtn.disabled = false;
+    this.stopBtn.disabled = true;
+
+    const d = parseInt(this.dimensionField?.value) || 10;
+    this.dimension = dimension;
+    if (d) this.dimension = d;
     this.canvas = canvas;
 
     if (this.gameField) {
       this.gameField.destroy();
     }
-    this.gameField = new Field(this.dimention, this.canvas);
+    this.gameField = new Field(this.dimension, this.canvas);
   }
 
   destroy() {

@@ -1,18 +1,19 @@
 import { Cell } from "./Cell.js";
 
 export class Field {
-  constructor(dimention = 100, canvas = ".board") {
+  constructor(dimension = 100, canvas = ".board") {
     this.board = document.querySelector(canvas);
-    this.dimention = dimention;
+    this.dimension = dimension;
     this.controller = new AbortController();
+    this.currentStep = 0;
 
     if (this.board) {
       if ("getContext" in this.board) {
         this.boardCtx = this.board.getContext("2d");
         this.boardCtx.fill;
       }
-      this.cellSize = this.board.clientWidth / this.dimention;
-      this.newField(dimention);
+      this.cellSize = this.board.clientWidth / this.dimension;
+      this.newField(dimension);
       this.board.addEventListener("pointerdown", this.boardClickListener, {
         signal: this.controller.signal,
       });
@@ -27,11 +28,11 @@ export class Field {
     }
   };
 
-  newField(dimention = this.dimention) {
-    this.field = new Array(dimention);
-    for (let i = 0; i < dimention; i++) {
-      this.field[i] = new Array(dimention);
-      for (let j = 0; j < dimention; j++) {
+  newField(dimension = this.dimension) {
+    this.field = new Array(dimension);
+    for (let i = 0; i < dimension; i++) {
+      this.field[i] = new Array(dimension);
+      for (let j = 0; j < dimension; j++) {
         this.field[i][j] = new Cell(i, j, this, this.cellSize);
       }
     }
@@ -49,6 +50,32 @@ export class Field {
     }
   }
 
+  startEmulation() {
+    if (!this.timer) this.timer = setInterval(this.nextState.bind(this), 1000);
+  }
+
+  stopEmulation() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+    this.timer = null;
+  }
+
+  getCell(fieldPoint) {
+    return this.field[fieldPoint.x][fieldPoint.y];
+  }
+
+  nextState = () => {
+    console.log("step start:", this.currentStep);
+    for (let i = 0; i < this.dimension; i++) {
+      for (let j = 0; j < this.dimension; j++) {
+        this.field[i][j].checkLife();
+      }
+    }
+    this.currentStep++;
+    console.log("this.field", this.field);
+  };
+
   toggleCell(x, y) {
     this.field[x][y].toggle();
   }
@@ -58,12 +85,13 @@ export class Field {
     this.boardCtx.fillRect(
       0,
       0,
-      this.cellSize * this.dimention,
-      this.cellSize * this.dimention
+      this.cellSize * this.dimension,
+      this.cellSize * this.dimension
     );
   }
 
   destroy() {
+    this.curretStep = 0;
     this.controller.abort();
     this.clearField();
     this.board = null;

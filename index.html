@@ -9,9 +9,19 @@
   </head>
   <body>
     <div class="container">
-      <div>
-        <button class="resetGame">Reset</button>
-        <button class="randomizeField">Randomize field</button>
+      <div class="form">
+        <div>
+          <label>Field dimension:</label>
+          <input id="dimension" value="10" />
+          <button class="resetGame">Reset</button>
+        </div>
+        <div>
+          <button class="randomizeField">Randomize field</button>
+        </div>
+        <div>
+          <button class="startBtn">Start</button>
+          <button class="stopBtn">Stop</button>
+        </div>
       </div>
       <canvas class="board" width="500" height="500"></canvas>
     </div>

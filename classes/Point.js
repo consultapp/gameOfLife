@@ -6,23 +6,23 @@ export class Point {
 }
 
 export class FieldPoint extends Point {
-  constructor(x, y, fieldDimention) {
+  constructor(x, y, fielddimension) {
     super(x, y);
-    if (fieldDimention > 0) {
+    if (fielddimension > 0) {
       this.x = x;
       this.y = y;
       if (this.x < 0) {
-        this.x = fieldDimention - 1;
+        this.x = fielddimension - 1;
       }
       if (this.y < 0) {
-        this.y = fieldDimention - 1;
+        this.y = fielddimension - 1;
       }
-      if (this.x >= fieldDimention) {
+      if (this.x >= fielddimension) {
         this.x = 0;
       }
-      if (this.y >= fieldDimention) {
+      if (this.y >= fielddimension) {
         this.y = 0;
       }
-    } else throw Error("Field dimention uncorrect");
+    } else throw Error("Field dimension uncorrect");
   }
 }
