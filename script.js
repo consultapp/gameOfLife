@@ -1,5 +1,4 @@
-import { Field } from "./classes/Field.js";
+import { GameOfLife } from "./classes/GameOfLife.js";
 
-window.addEventListener("load", () => {
-  const gameField = new Field(10);
-});
+const game = new GameOfLife();
+game.init();

@@ -43,6 +43,10 @@ export class Cell extends Point {
     this.updateUI();
   }
 
+  toggle() {
+    this.type === CellTypes.alive ? this.die() : this.revive();
+  }
+
   updateUI() {
     this.type === CellTypes.alive
       ? (this.field.boardCtx.fillStyle = "red")
