@@ -87,9 +87,8 @@ export class Cell extends Point {
   }
 
   updateUI(last = true) {
-    this.getState(last) === CellTypes.alive
-      ? (this.field.boardCtx.fillStyle = "red")
-      : (this.field.boardCtx.fillStyle = "white");
+    this.field.boardCtx.fillStyle =
+      this.getState(last) === CellTypes.alive ? "red" : "white";
 
     this.field.boardCtx.fillRect(
       Math.trunc(this.y * this.cellSize),

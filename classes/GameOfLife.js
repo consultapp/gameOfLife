@@ -10,6 +10,7 @@ export class GameOfLife {
   init() {
     this.controller = new AbortController();
     window.addEventListener("load", () => {
+      this.initDialog();
       this.initDimension();
       this.gameField = new Field(this.width, this.dimension, this.canvas);
       this.initStartBtn();
@@ -20,6 +21,23 @@ export class GameOfLife {
       this.initEogListener();
       this.initNextBtn();
     });
+  }
+
+  initDialog() {
+    this.dialog = document.querySelector("dialog");
+    if (this.dialog) {
+      this.dialogClose = this.dialog.querySelector("dialog button");
+      this.dialogClose.addEventListener(
+        "click",
+        () => {
+          this.dialog.close();
+          this.reset();
+        },
+        {
+          signal: this.controller.signal,
+        }
+      );
+    } else throw Error("no dialog was found");
   }
 
   initTimeMeasurement() {
@@ -34,23 +52,21 @@ export class GameOfLife {
           signal: this.controller.signal,
         }
       );
-    } else throw Error("no timeContainer found");
+    } else throw Error("no timeContainer was found");
   }
 
   initEogListener() {
-    if (this.timeContainer) {
-      window.addEventListener(
-        "eog",
-        (event) => {
-          this.stop();
-          alert(event.detail.msg);
-          this.reset();
-        },
-        {
-          signal: this.controller.signal,
-        }
-      );
-    } else throw Error("no timeContainer found");
+    window.addEventListener(
+      "eog",
+      (event) => {
+        this.stop();
+        this.dialog.children[0].innerHTML = event.detail.msg;
+        this.dialog.showModal();
+      },
+      {
+        signal: this.controller.signal,
+      }
+    );
   }
 
   initStartBtn() {
@@ -64,7 +80,7 @@ export class GameOfLife {
           signal: this.controller.signal,
         }
       );
-    } else throw Error("no start button found");
+    } else throw Error("no start button was found");
   }
 
   initStopBtn() {
@@ -74,7 +90,7 @@ export class GameOfLife {
       this.stopBtn.addEventListener("click", this.stop, {
         signal: this.controller.signal,
       });
-    } else throw Error("no stop button found");
+    } else throw Error("no stop button was found");
   }
 
   initNextBtn() {
@@ -83,13 +99,19 @@ export class GameOfLife {
       this.nextBtn.addEventListener(
         "click",
         () => {
-          this.gameField.nextState();
+          if (this.gameField.history[0] !== "0".repeat(this.dimension ** 2)) {
+            this.gameField.nextState();
+          } else {
+            this.dialog.children[0].innerHTML =
+              "We need at least one alive cell.";
+            this.dialog.showModal();
+          }
         },
         {
           signal: this.controller.signal,
         }
       );
-    } else throw Error("no next button found");
+    } else throw Error("no next button was found");
   }
 
   initDimension() {
@@ -105,7 +127,7 @@ export class GameOfLife {
       this.resetBtn.addEventListener("click", () => this.reset(), {
         signal: this.controller.signal,
       });
-    } else throw Error("no reset button found");
+    } else throw Error("no reset button was found");
   }
 
   initRandomizeBtn() {
@@ -116,16 +138,21 @@ export class GameOfLife {
         () => this.gameField.randomLife(10),
         { signal: this.controller.signal }
       );
-    } else throw Error("no randomize button found");
+    } else throw Error("no randomize button was found");
   }
 
   start = (sleep = 250) => {
-    this.randomizeFieldBtn.disabled = true;
-    this.startBtn.disabled = true;
-    this.nextBtn.disabled = true;
-    this.stopBtn.disabled = false;
+    if (this.gameField.history[0] !== "0".repeat(this.dimension ** 2)) {
+      this.randomizeFieldBtn.disabled = true;
+      this.startBtn.disabled = true;
+      this.nextBtn.disabled = true;
+      this.stopBtn.disabled = false;
 
-    this.gameField.startEmulation(sleep);
+      this.gameField.startEmulation(sleep);
+    } else {
+      this.dialog.children[0].innerHTML = "We need at least one alive cell.";
+      this.dialog.showModal();
+    }
   };
 
   stop = () => {

@@ -78,32 +78,34 @@ export class Field {
     const start = new Date().getTime();
     let hist = "";
     let aliveCount = 0;
+    let currentCellState = "";
     for (let i = 0; i < this.dimension; i++) {
       for (let j = 0; j < this.dimension; j++) {
         this.field[i][j].checkLife();
-
-        hist += this.field[i][j].getState(true) === CellTypes.alive ? "1" : "0";
-        aliveCount +=
+        currentCellState =
           this.field[i][j].getState(true) === CellTypes.alive ? 1 : 0;
+        hist += `${currentCellState}`;
+        aliveCount += currentCellState;
       }
     }
     const end = new Date().getTime();
+    this.currentStep++;
 
     if (aliveCount === 0) {
-      this.sendEOG("End of the game: all cells are dead.");
+      this.sendEOG(
+        `End of the game: All cells are dead after ${this.currentStep} step(s).`
+      );
       return;
     } else if (this.history.includes(hist)) {
-      this.sendEOG("End of the game: loop.");
+      this.sendEOG(`End of the game: Loop on ${this.currentStep} step.`);
       return;
     }
 
     this.history.push(hist);
-
     // trick))
     if (this.history.length > 500) {
       this.history.shift();
     }
-    this.currentStep++;
 
     const emulationEvent = new CustomEvent("emulationStep", {
       bubbles: true,
@@ -121,8 +123,8 @@ export class Field {
         msg,
       },
     });
-    this.board.dispatchEvent(emulationEvent);
     this.stopEmulation();
+    this.board.dispatchEvent(emulationEvent);
   }
 
   replaceHistoryAt(index, replacement) {

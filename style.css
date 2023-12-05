@@ -8,12 +8,11 @@ body {
 .container {
   display: flex;
   flex-direction: column;
-  width: 100vw;
   justify-content: flex-start;
   align-items: center;
   gap: 20px;
-  padding: 0;
-  margin: 5px;
+  padding: 5px;
+  margin: 0;
 }
 .container > * {
   width: 100%;
@@ -23,7 +22,6 @@ body {
 .board {
   border: 1px solid black;
   cursor: pointer;
-  width: 100%;
 }
 .form {
   display: flex;
@@ -39,4 +37,9 @@ header {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+}
+
+::backdrop {
+  background: gray;
+  opacity: 0.5;
 }
